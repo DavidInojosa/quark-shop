@@ -1,0 +1,6 @@
+module Pods_QuarkShop {
+  umbrella header "Pods-QuarkShop-umbrella.h"
+
+  export *
+  module * { export * }
+}
