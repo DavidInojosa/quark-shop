@@ -4,6 +4,7 @@ const INITIAL_STATE = {
     categories: [],
     products: [],
     favorites: [],
+    cart: [],
 };
 
 export default function quark(state = INITIAL_STATE, action) {
@@ -16,6 +17,16 @@ export default function quark(state = INITIAL_STATE, action) {
 
       case '@quark/SET_PRODUCTS': {
         draft.products = action.payload.products;
+        break;
+      }
+
+      case '@quark/SET_FAVORITES': {
+        draft.favorites = action.payload.favorites;
+        break;
+      }
+
+      case '@quark/SET_CART': {
+        draft.cart = action.payload.cart;
         break;
       }
 

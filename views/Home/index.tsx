@@ -15,18 +15,19 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
+import { format } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconQuark from '../../assets/images/iconQuark';
 import NotFilledHearth from '../../assets/images/notFilledHearth';
-import IconWine from '../../assets/images/wine';
-import IconMeat from '../../assets/images/meat';
-import IconFruit from '../../assets/images/fruits';
-
+import FilledHearth from '../../assets/images/filledHearth';
 import * as C from '../../components/styles';
 import * as S from './styles';
 import {
   getCategories,
+  getFavorites,
   getProducts,
+  setCart,
+  setFavorites,
 } from '../../store/modules/quark/actions.js';
 
 export default function Home() {
@@ -34,14 +35,19 @@ export default function Home() {
   const carouselRef = useRef(null);
   const [search, setSearch] = useState('');
   const [productsFiltered, setProductsFiltered] = useState([]);
-  const categories = useSelector(state => state.quark?.categories?.data as any);
-  const products = useSelector(state => state.quark?.products?.data as any);
+  const categories = useSelector(state => state.quark?.categories as []);
+  const products = useSelector(state => state.quark?.products as []);
+  const cart = useSelector(state => state.quark?.cart as []);
+  const favorites = useSelector(state => state.quark?.favorites as []);
   const [category, setCategory] = useState(
     new Array(categories.length).fill(false),
   );
+
   useEffect(() => {
     dispatch(getCategories());
     dispatch(getProducts());
+    dispatch(getFavorites());
+    dispatch(setCart([]));
   }, []);
 
   useEffect(() => {
@@ -51,7 +57,6 @@ export default function Home() {
   }, [products]);
 
   useEffect(() => {
-    console.tron.log('mudou', search, category);
     const newProducts = products.filter(productItem => {
       return productItem.name
         .toLowerCase()
@@ -64,7 +69,6 @@ export default function Home() {
           return productItemCategory.category === index + 1 && item;
         },
       );
-      console.tron.log('final', newProductsFromCategory);
       finalProductsArray.push(newProductsFromCategory);
     });
     let mergeArrays = [].concat(...finalProductsArray);
@@ -73,6 +77,61 @@ export default function Home() {
     }
     setProductsFiltered(mergeArrays);
   }, [search, category]);
+
+  const handleIcon = (item: object) => {
+    for (let i = 0; i < favorites.length; i += 1) {
+      if (favorites[i].id === item?.id) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const handleAddToCart = (item: object) => {
+    let newCart = [];
+    if (cart.length === 0) {
+      newCart.push({
+        ...(item as object),
+        quantity: 1,
+      });
+    } else {
+      newCart = [];
+      let isInCart = false;
+      for (let j = 0; j < cart.length; j += 1) {
+        if (cart[j].id === item.id) {
+          const quantityAux = cart[j].quantity;
+          newCart.push({
+            ...(cart[j] as object),
+            quantity: quantityAux + 1,
+          });
+          isInCart = true;
+        } else {
+          newCart.push(cart[j]);
+        }
+      }
+      if (!isInCart) {
+        newCart.push({ ...(item as object), quantity: 1 });
+      }
+    }
+
+    dispatch(setCart(newCart));
+  };
+
+  const handleFavorite = (item: object) => {
+    let newFavorites = [];
+    if (handleIcon(item)) {
+      newFavorites = favorites.filter((favorite: object) => {
+        return favorite.id !== item.id;
+      });
+    } else {
+      newFavorites.push({
+        id: item.id,
+        created_at: format(new Date(), 'MM/dd/yyyy'),
+      });
+      newFavorites = newFavorites.concat(favorites);
+    }
+    dispatch(setFavorites(newFavorites));
+  };
 
   return (
     <KeyboardAvoidingView
@@ -150,7 +209,9 @@ export default function Home() {
           keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => (
             <S.ProductContainer>
-              <NotFilledHearth />
+              <S.IconContainer onPress={() => handleFavorite(item)}>
+                {handleIcon(item) ? <FilledHearth /> : <NotFilledHearth />}
+              </S.IconContainer>
               <Image
                 style={{
                   width: 30,
@@ -165,7 +226,12 @@ export default function Home() {
               <S.ProductText>{item.name}</S.ProductText>
               <S.ProductRow>
                 <S.ProductCostText>R$ {item.price}</S.ProductCostText>
-                <S.ProductAddText>+</S.ProductAddText>
+                <S.IconContainer
+                  style={{ width: 20 }}
+                  onPress={() => handleAddToCart(item)}
+                >
+                  <S.ProductAddText>+</S.ProductAddText>
+                </S.IconContainer>
               </S.ProductRow>
             </S.ProductContainer>
           )}

@@ -1,30 +1,30 @@
 import { all, takeLatest, put, call } from 'redux-saga/effects';
 import api from '../../../services/api';
-import { setCategories, setProducts } from './actions';
+import { setCategories, setFavorites, setProducts } from './actions';
 
 
 export function* getCategoriesSagas() {
   try {
     const response = yield call(api.get, '/categories');
-    console.tron.log('categories', response.data);
-    yield put(setCategories(response));
+    yield put(setCategories(response.data));
   } catch (error) {
-    console.tron.log('err', error);
   }
 }
 
-export function* getProductsSagas({ payload }) {
+export function* getProductsSagas() {
   try {
     const response = yield call(api.get, '/products');
-    console.tron.log('products', response.data);
-    yield put(setProducts(response));
+    yield put(setProducts(response.data));
   } catch (error) {
-    console.tron.log('err', error);
   }
 }
 
-export function* getFavoritesSagas({ payload }) {
-
+export function* getFavoritesSagas() {
+  try {
+    const response = yield call(api.get, '/favorites');
+    yield put(setFavorites(response.data));
+  } catch (error) {
+  }
 }
 
 export default all([

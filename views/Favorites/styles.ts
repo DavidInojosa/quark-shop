@@ -4,7 +4,6 @@ export const FakeContainer = styled.View`
   height: 150px;
 `;
 
-
 export const ProductContainer = styled.TouchableOpacity`
   width: 48%;
   height: 230px;
@@ -47,4 +46,10 @@ export const ProductRow = styled.View`
   width: 100%;
   left: 10;
   right: 20;
+`;
+
+export const IconContainer = styled.TouchableOpacity`
+  width: 30;
+  width: 30;
+  z-index: 1000;
 `;

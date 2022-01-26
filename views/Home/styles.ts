@@ -67,6 +67,13 @@ export const CategoryText = styled.Text`
 export const FakeContainer = styled.View`
   height: 150px;
 `;
+
+export const IconContainer = styled.TouchableOpacity`
+  width: 30;
+  width: 30;
+  z-index: 1000;
+`;
+
 export const ProductContainer = styled.TouchableOpacity`
   width: 48%;
   height: 230px;
