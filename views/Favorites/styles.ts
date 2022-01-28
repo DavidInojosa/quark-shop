@@ -53,3 +53,4 @@ export const IconContainer = styled.TouchableOpacity`
   width: 30;
   z-index: 1000;
 `;
+

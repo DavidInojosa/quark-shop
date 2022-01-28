@@ -13,7 +13,7 @@ import {
 
 import * as C from '../../components/styles';
 import * as S from './styles';
-import { setCart } from '../../store/modules/quark/actions';
+import { setCart } from '../../store/modules/quark/actions.js';
 
 export default function Cart() {
   const dispatch = useDispatch();
